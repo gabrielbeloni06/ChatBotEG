@@ -1,9 +1,14 @@
+import os
 import difflib
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
+
 app = FastAPI()
+client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY")
+)
 
 origins = ["*"]
 app.add_middleware(
@@ -17,6 +22,7 @@ app.add_middleware(
 class MensagemUsuario(BaseModel):
     texto: str
     modo: str
+
 CARDAPIO_TEXTO = """
 🍕 *PIZZAS TRADICIONAIS*
 1. Calabresa (R$ 45,00)
@@ -27,6 +33,7 @@ CARDAPIO_TEXTO = """
 4. Coca-Cola 2L (R$ 12,00)
 """
 
+# --- Bot Básico ---
 def bot_basico(texto):
     t = texto.lower()
     if "cardápio" in t or "cardapio" in t:
@@ -34,6 +41,8 @@ def bot_basico(texto):
     elif "promoção" in t or "promocao" in t:
         return "[BÁSICO] 2 Pizzas por R$ 70,00."
     return "[BÁSICO] Comando não reconhecido. Tente 'cardápio'."
+
+# --- Bot Smart ---
 def bot_smart(texto):
     texto_lower = texto.lower()
     palavras_usuario = texto_lower.split()
@@ -58,6 +67,8 @@ def bot_smart(texto):
     if intencao == "olá": return "[SMART] Olá! Posso te mostrar o cardápio?"
     
     return f"[SMART] Não entendi '{texto}' exato, mas tentei corrigir. Quis dizer 'cardápio'?"
+
+# --- Bot Premium (IA) ---
 def bot_premium(texto):
     system_prompt = f"""
     Você é o 'Robô-Garçom' da Pizzaria Tech.
@@ -86,6 +97,7 @@ def bot_premium(texto):
     except Exception as e:
         print(f"Erro na Groq: {e}")
         return "⚠️ Erro de conexão com a IA Premium. Verifique sua chave API."
+
 @app.post("/api/chat")
 async def chat(msg: MensagemUsuario):
     if msg.modo == "premium":
