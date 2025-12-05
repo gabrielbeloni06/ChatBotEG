@@ -1,0 +1,11 @@
+# Ignorar coisas de Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Ignorar coisas de Node/Next
+node_modules/
+.next/
+dist/
+.DS_Store
