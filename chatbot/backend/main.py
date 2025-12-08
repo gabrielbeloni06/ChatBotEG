@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from groq import Groq
 
 app = FastAPI()
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY")
-)
 
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+# --- CORS (LIBERADO) ---
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -23,64 +23,37 @@ class MensagemUsuario(BaseModel):
     texto: str
     modo: str
 
-CARDAPIO_TEXTO = """
-🍕 *PIZZAS TRADICIONAIS*
-1. Calabresa (R$ 45,00)
-2. Mussarela (R$ 40,00)
-3. Frango c/ Catupiry (R$ 50,00)
-
-🥤 *BEBIDAS*
-4. Coca-Cola 2L (R$ 12,00)
+CARDAPIO = """
+🍔 *ZYTECH BURGERS - 2077*
+1. Cyber Burger (R$ 35,00) - Carne sintética premium, queijo neon.
+2. Netrunner (R$ 42,00) - Duplo smash, bacon crocante.
+3. Edgerunner Combo (R$ 55,00) - Burger + Batata + Refri.
 """
 
-# --- Bot Básico ---
-def bot_basico(texto):
+def bot_bronze(texto):
     t = texto.lower()
-    if "cardápio" in t or "cardapio" in t:
-        return f"[BÁSICO] Aqui está:\n{CARDAPIO_TEXTO}"
-    elif "promoção" in t or "promocao" in t:
-        return "[BÁSICO] 2 Pizzas por R$ 70,00."
-    return "[BÁSICO] Comando não reconhecido. Tente 'cardápio'."
+    if "cardápio" in t or "cardapio" in t or "menu" in t:
+        return f"[SYSTEM: BRONZE_MODE]\n{CARDAPIO}\n\nDigite o número do pedido."
+    elif "1" in t or "2" in t or "3" in t:
+        return "[SYSTEM: BRONZE_MODE] Item adicionado. Digite 'fechar' para concluir."
+    elif "fechar" in t:
+        return "[SYSTEM: BRONZE_MODE] Pedido enviado. Aguarde o motoboy."
+    return "[SYSTEM: ERROR] Comando inválido. Digite 'cardápio'."
 
-# --- Bot Smart ---
-def bot_smart(texto):
-    texto_lower = texto.lower()
-    palavras_usuario = texto_lower.split()
-    
-    conhecimentos = {
-        "cardápio": ["cardapio", "menu", "lista", "opções", "opcoes", "ver", "comer", "fome"],
-        "promoção": ["promocao", "oferta", "desconto", "barato"],
-        "olá": ["oi", "opa", "bom", "ola", "eai"]
-    }
-
-    intencao = None
-    for key, values in conhecimentos.items():
-        if difflib.get_close_matches(key, palavras_usuario, n=1, cutoff=0.6):
-            intencao = key; break
-        for val in values:
-            if difflib.get_close_matches(val, palavras_usuario, n=1, cutoff=0.6):
-                intencao = key; break
-        if intencao: break
-
-    if intencao == "cardápio": return f"[SMART] Entendi que você quer comer:\n{CARDAPIO_TEXTO}"
-    if intencao == "promoção": return "[SMART] Oferta do dia: Entrega grátis acima de R$ 100!"
-    if intencao == "olá": return "[SMART] Olá! Posso te mostrar o cardápio?"
-    
-    return f"[SMART] Não entendi '{texto}' exato, mas tentei corrigir. Quis dizer 'cardápio'?"
-
-# --- Bot Premium (IA) ---
-def bot_premium(texto):
+def bot_turbo(texto):
     system_prompt = f"""
-    Você é o 'Robô-Garçom' da Pizzaria Tech.
-    Seu tom é: Divertido, Vendedor e Educado. Use Emojis! 🍕😋
+    Você é o sistema de IA da 'Zytech Foods' em Night City.
+    Personalidade: Cyberpunk, rápido, usa gírias como 'Choom', 'Nova', 'Eddie'.
     
-    CARDÁPIO ATUAL:
-    {CARDAPIO_TEXTO}
+    CARDÁPIO:
+    {CARDAPIO}
     
-    REGRAS:
-    1. Se perguntarem ingredientes, invente descrições deliciosas (queijo derretendo, borda crocante).
-    2. Se o cliente falar de outra coisa (futebol, política), brinque e volte para pizza.
-    3. Seu objetivo final é fazer o cliente pedir.
+    SUA MISSÃO (NÃO PARE ATÉ COMPLETAR):
+    1. Tirar o pedido do cliente.
+    2. Pegar o ENDEREÇO de entrega.
+    3. Pegar a FORMA DE PAGAMENTO.
+    
+    Se o cliente desviar do assunto, corte e volte para o pedido. Você precisa fechar a venda.
     """
     
     try:
@@ -91,20 +64,16 @@ def bot_premium(texto):
             ],
             model="llama-3.3-70b-versatile",
             temperature=0.7,
-            max_tokens=200,
+            max_tokens=250,
         )
         return completion.choices[0].message.content
     except Exception as e:
-        print(f"Erro na Groq: {e}")
-        return "⚠️ Erro de conexão com a IA Premium. Verifique sua chave API."
+        return "⚠️ [CONNECTION_LOST] Erro na Neural Link (API). Tente novamente."
 
 @app.post("/api/chat")
 async def chat(msg: MensagemUsuario):
-    if msg.modo == "premium":
-        resposta = bot_premium(msg.texto)
-    elif msg.modo == "smart":
-        resposta = bot_smart(msg.texto)
+    if msg.modo == "turbo":
+        resposta = bot_turbo(msg.texto)
     else:
-        resposta = bot_basico(msg.texto)
-        
+        resposta = bot_bronze(msg.texto)
     return {"resposta": resposta}

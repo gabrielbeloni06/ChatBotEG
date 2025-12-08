@@ -1,99 +1,37 @@
-"use client"
-import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [input, setInput] = useState('');
-  const [mode, setMode] = useState('basic');
-  const [chatLog, setChatLog] = useState([
-    { role: 'bot', content: 'Olá! Selecione o nível do bot acima para testar.' }
-  ]);
-  const [loading, setLoading] = useState(false);
-  const getTheme = () => {
-    switch(mode) {
-      case 'smart': return { bg: 'bg-purple-600', hover: 'hover:bg-purple-700', light: 'bg-purple-100', text: 'text-purple-900', title: 'Bot Smart (Fuzzy)' };
-      case 'premium': return { bg: 'bg-amber-500', hover: 'hover:bg-amber-600', light: 'bg-amber-100', text: 'text-amber-900', title: 'Bot Premium (IA Real) ✨' };
-      default: return { bg: 'bg-green-600', hover: 'hover:bg-green-700', light: 'bg-green-100', text: 'text-green-900', title: 'Bot Básico (Regras)' };
-    }
-  };
-  const theme = getTheme();
-
-  async function enviarMensagem(e) {
-    e.preventDefault();
-    if (!input) return;
-
-    const novaMsg = { role: 'user', content: input };
-    setChatLog(prev => [...prev, novaMsg]);
-    const textoAtual = input;
-    setInput('');
-    setLoading(true);
-
-    try {
-      const response = await fetch('https://chatboteg.onrender.com/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto: textoAtual, modo: mode }),
-      });
-      const data = await response.json();
-      setChatLog(prev => [...prev, { role: 'bot', content: data.resposta }]);
-    } catch (error) {
-      setChatLog(prev => [...prev, { role: 'bot', content: "Erro de conexão." }]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 font-sans">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
-        <div className={`${theme.bg} p-4 text-white transition-colors duration-500`}>
-          <h1 className="font-bold text-center text-lg mb-4">{theme.title}</h1>
-          <div className="flex bg-black/20 p-1 rounded-lg gap-1">
-            {['basic', 'smart', 'premium'].map((m) => (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setChatLog([]); }}
-                className={`flex-1 py-1 px-2 rounded-md text-xs font-bold uppercase transition-all ${
-                  mode === m 
-                    ? 'bg-white text-gray-800 shadow-md transform scale-105' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
+    <div className="min-h-screen bg-black text-[#FCEE0A] font-mono flex flex-col items-center justify-center relative overflow-hidden">
+      
+      {/* Background Grid Effect */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20"></div>
 
-        <div className="h-96 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3">
-          {chatLog.map((msg, index) => (
-            <div 
-              key={index} 
-              className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm ${
-                msg.role === 'user' 
-                  ? `${theme.light} ${theme.text} self-end rounded-br-none` 
-                  : 'bg-white border border-gray-100 text-gray-700 self-start rounded-bl-none'
-              }`}
-            >
-              <div className="whitespace-pre-wrap">{msg.content}</div>
-            </div>
-          ))}
-          {loading && <div className="text-gray-400 text-xs ml-2 animate-pulse">Pensando...</div>}
-        </div>
-        <form onSubmit={enviarMensagem} className="p-3 border-t border-gray-100 flex gap-2 bg-white">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="flex-1 p-3 bg-gray-100 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 text-black text-sm"
-            placeholder={`Conversar com ${mode}...`}
-          />
-          <button type="submit" disabled={loading} className={`${theme.bg} text-white p-3 rounded-full ${theme.hover} shadow-lg transition-transform active:scale-95`}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-            </svg>
-          </button>
-        </form>
+      <div className="z-10 text-center space-y-8 p-6">
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter glitch-text uppercase" style={{ textShadow: '4px 4px 0px #00F0FF' }}>
+          ZYTECH
+        </h1>
+        <p className="text-xl md:text-2xl text-[#00F0FF] tracking-widest uppercase border-b-2 border-[#FCEE0A] inline-block pb-2">
+          Systems Online // 2077
+        </p>
 
+        <div className="flex flex-col gap-4 mt-10">
+          <Link href="/bots">
+            <button className="px-10 py-4 bg-[#FCEE0A] text-black font-black text-xl uppercase tracking-widest hover:bg-[#00F0FF] hover:text-white transition-all duration-200" style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)' }}>
+              Testar Bots
+            </button>
+          </Link>
+          
+          <Link href="/planos">
+            <button className="px-10 py-4 border-2 border-[#FCEE0A] text-[#FCEE0A] font-bold text-lg uppercase tracking-widest hover:bg-[#FCEE0A] hover:text-black transition-all duration-200" style={{ clipPath: 'polygon(0 0, 100% 0, 90% 100%, 0% 100%)' }}>
+              Ver Configurações (Planos)
+            </button>
+          </Link>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-5 text-[#00F0FF] text-xs opacity-50">
+        SYSTEM_ID: ZY-900 // NETRUNNER_ACCESS
       </div>
     </div>
   );
