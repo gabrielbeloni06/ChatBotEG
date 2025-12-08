@@ -18,11 +18,14 @@ export default function Bots() {
   };
   useEffect(() => { scrollToBottom() }, [chatLog]);
 
-  async function enviarMensagem(e) {
+async function enviarMensagem(e) {
     e.preventDefault();
     if (!input) return;
 
     const novaMsg = { role: 'user', content: input };
+    
+    const historicoAtual = [...chatLog]; 
+    
     setChatLog(prev => [...prev, novaMsg]);
     const texto = input;
     setInput('');
@@ -32,7 +35,11 @@ export default function Bots() {
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto: texto, modo: mode }),
+        body: JSON.stringify({ 
+            texto: texto, 
+            modo: mode,
+            historico: historicoAtual
+        }),
       });
       const data = await res.json();
       setChatLog(prev => [...prev, { role: 'bot', content: data.resposta }]);
