@@ -1,37 +1,40 @@
 import Link from 'next/link';
+import Image from 'next/image'; 
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-[#FCEE0A] font-mono flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans flex flex-col items-center justify-center relative overflow-hidden">
       
-      {/* Background Grid Effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-black to-black opacity-80"></div>
+      
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
-      <div className="z-10 text-center space-y-8 p-6">
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter glitch-text uppercase" style={{ textShadow: '4px 4px 0px #00F0FF' }}>
+      <div className="z-10 flex flex-col items-center space-y-6 p-8 max-w-2xl w-full">
+        <div className="w-32 h-32 relative mb-4 drop-shadow-[0_0_15px_rgba(252,238,10,0.5)]">
+            <img src="./public/logo.png" alt="Zytech Logo" className="object-contain w-full h-full" />
+        </div>
+
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#FCEE0A] to-[#fff]">
           ZYTECH
         </h1>
-        <p className="text-xl md:text-2xl text-[#00F0FF] tracking-widest uppercase border-b-2 border-[#FCEE0A] inline-block pb-2">
-          Systems Online // 2077
+        
+        <p className="text-gray-400 text-lg tracking-widest uppercase border-b border-[#FCEE0A] pb-2">
+          Soluções em Automação
         </p>
 
-        <div className="flex flex-col gap-4 mt-10">
-          <Link href="/bots">
-            <button className="px-10 py-4 bg-[#FCEE0A] text-black font-black text-xl uppercase tracking-widest hover:bg-[#00F0FF] hover:text-white transition-all duration-200" style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)' }}>
-              Testar Bots
+        <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full justify-center">
+          <Link href="/bots" className="w-full sm:w-auto">
+            <button className="w-full px-8 py-4 bg-[#FCEE0A] text-black font-bold text-lg hover:bg-white hover:scale-105 transition-all duration-300 rounded-sm shadow-[0_0_20px_rgba(252,238,10,0.3)]">
+              TESTAR BOTS
             </button>
           </Link>
           
-          <Link href="/planos">
-            <button className="px-10 py-4 border-2 border-[#FCEE0A] text-[#FCEE0A] font-bold text-lg uppercase tracking-widest hover:bg-[#FCEE0A] hover:text-black transition-all duration-200" style={{ clipPath: 'polygon(0 0, 100% 0, 90% 100%, 0% 100%)' }}>
-              Ver Configurações (Planos)
+          <Link href="/planos" className="w-full sm:w-auto">
+            <button className="w-full px-8 py-4 border border-[#333] text-gray-300 font-bold text-lg hover:border-[#FCEE0A] hover:text-[#FCEE0A] transition-all duration-300 rounded-sm">
+              VER PLANOS
             </button>
           </Link>
         </div>
-      </div>
-      
-      <div className="absolute bottom-5 text-[#00F0FF] text-xs opacity-50">
-        SYSTEM_ID: ZY-900 // NETRUNNER_ACCESS
       </div>
     </div>
   );

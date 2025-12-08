@@ -4,19 +4,18 @@ import Link from 'next/link';
 
 export default function Bots() {
   const [input, setInput] = useState('');
-  const [mode, setMode] = useState('bronze'); // 'bronze' ou 'turbo'
+  const [mode, setMode] = useState('bronze'); 
   const [chatLog, setChatLog] = useState([
-    { role: 'bot', content: 'SYSTEM READY. Escolha seu Neural Link acima.' }
+    { role: 'bot', content: 'Olá! Escolha o tipo de atendimento acima para começar.' }
   ]);
   const [loading, setLoading] = useState(false);
   const endOfMessagesRef = useRef(null);
 
-  const API_URL = "https://chatboteg.onrender.com/api/chat"; // SUA URL DO RENDER AQUI
+  const API_URL = "https://chatboteg.onrender.com/api/chat"; 
 
   const scrollToBottom = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(() => { scrollToBottom() }, [chatLog]);
 
   async function enviarMensagem(e) {
@@ -38,75 +37,87 @@ export default function Bots() {
       const data = await res.json();
       setChatLog(prev => [...prev, { role: 'bot', content: data.resposta }]);
     } catch (error) {
-      setChatLog(prev => [...prev, { role: 'bot', content: "⚠️ ERRO DE CONEXÃO COM O SERVIDOR." }]);
+      setChatLog(prev => [...prev, { role: 'bot', content: "⚠️ Erro de conexão." }]);
     } finally {
       setLoading(false);
     }
   }
+  const activeColor = mode === 'turbo' ? 'bg-[#FCEE0A] text-black' : 'bg-[#CD7F32] text-black';
+  const borderColor = mode === 'turbo' ? 'border-[#FCEE0A]' : 'border-[#CD7F32]';
 
   return (
-    <div className="min-h-screen bg-black text-[#FCEE0A] font-mono flex flex-col">
-      {/* Header Cyberpunk */}
-      <div className="border-b-2 border-[#FCEE0A] p-4 flex justify-between items-center bg-[#111]">
-        <Link href="/" className="text-2xl font-black italic tracking-tighter text-[#00F0FF]">ZYTECH</Link>
-        <Link href="/planos" className="text-sm underline hover:text-[#00F0FF]">VER PLANOS</Link>
+    <div className="min-h-screen bg-[#0a0a0a] text-gray-200 font-sans flex flex-col items-center py-10 px-4">
+      
+      <div className="w-full max-w-2xl flex justify-between items-center mb-6">
+        <Link href="/" className="text-xl font-bold tracking-tight text-[#FCEE0A]">ZYTECH <span className="text-white opacity-50 font-normal">| Demo</span></Link>
+        <Link href="/planos" className="text-sm text-gray-400 hover:text-white transition-colors">Ver Planos →</Link>
       </div>
 
-      <div className="flex justify-center gap-4 p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
-        <button 
-          onClick={() => {setMode('bronze'); setChatLog([])}}
-          className={`px-6 py-2 font-bold uppercase tracking-widest transition-all ${mode === 'bronze' ? 'bg-[#CD7F32] text-black scale-110 shadow-[4px_4px_0px_#fff]' : 'border border-[#CD7F32] text-[#CD7F32] opacity-50'}`}
-          style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%)' }}
-        >
-          Bronze (Clássico)
-        </button>
+      <div className="w-full max-w-2xl bg-[#111] rounded-2xl shadow-2xl overflow-hidden border border-[#333] flex flex-col h-[70vh] md:h-[600px]">
+        
+        <div className="flex border-b border-[#333]">
+          <button 
+            onClick={() => {setMode('bronze'); setChatLog([])}}
+            className={`flex-1 py-4 text-sm font-bold uppercase transition-all ${mode === 'bronze' ? 'bg-[#CD7F32] text-black' : 'text-gray-500 hover:bg-[#1a1a1a]'}`}
+          >
+            Bronze (Botões)
+          </button>
+          <button 
+            onClick={() => {setMode('turbo'); setChatLog([])}}
+            className={`flex-1 py-4 text-sm font-bold uppercase transition-all ${mode === 'turbo' ? 'bg-[#FCEE0A] text-black' : 'text-gray-500 hover:bg-[#1a1a1a]'}`}
+          >
+            IA Turbo (Llama 3)
+          </button>
+        </div>
 
-        <button 
-          onClick={() => {setMode('turbo'); setChatLog([])}}
-          className={`px-6 py-2 font-bold uppercase tracking-widest transition-all ${mode === 'turbo' ? 'bg-[#00F0FF] text-black scale-110 shadow-[4px_4px_0px_#FCEE0A]' : 'border border-[#00F0FF] text-[#00F0FF] opacity-50'}`}
-          style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%)' }}
-        >
-          💎 Prata/Ouro/Dima (AI)
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-black/90 relative">
-        {/* Grid de fundo */}
-        <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(50,50,50,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(50,50,50,0.2)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
-
-        {chatLog.map((msg, i) => (
-          <div key={i} className={`relative z-10 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[85%] p-4 text-sm md:text-base border-l-4 ${
-                msg.role === 'user' 
-                  ? 'bg-[#FCEE0A] text-black border-white' 
-                  : mode === 'turbo' ? 'bg-[#000510] border-[#00F0FF] text-[#00F0FF] shadow-[0_0_10px_#00F0FF33]' : 'bg-[#1a1a1a] border-[#CD7F32] text-[#CD7F32]'
-              }`}
-              style={{ clipPath: msg.role === 'user' ? 'polygon(100% 0, 100% 100%, 0 100%, 10% 0)' : 'polygon(0 0, 100% 0, 90% 100%, 0 100%)' }}
-            >
-              <span className="block text-[10px] font-bold opacity-70 mb-1">
-                {msg.role === 'user' ? 'YOU' : mode === 'turbo' ? 'NETRUNNER_AI' : 'BASIC_BOT'}
-              </span>
-              <div className="whitespace-pre-wrap font-semibold">{msg.content}</div>
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#111]">
+          {chatLog.map((msg, i) => (
+            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div 
+                className={`max-w-[80%] p-3 rounded-2xl text-sm md:text-base shadow-sm ${
+                  msg.role === 'user' 
+                    ? 'bg-[#333] text-white rounded-br-none' 
+                    : `bg-[#1a1a1a] border ${borderColor} text-gray-200 rounded-bl-none`
+                }`}
+              >
+                <div className="whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+              </div>
             </div>
-          </div>
-        ))}
-        {loading && <div className="text-[#00F0FF] text-xs animate-pulse text-center">PROCESSING DATA...</div>}
-        <div ref={endOfMessagesRef} />
+          ))}
+          {loading && (
+            <div className="flex justify-start">
+               <div className="bg-[#1a1a1a] p-3 rounded-2xl rounded-bl-none text-xs text-gray-500 italic flex items-center gap-2">
+                 <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                 Digitando...
+               </div>
+            </div>
+          )}
+          <div ref={endOfMessagesRef} />
+        </div>
+
+        <form onSubmit={enviarMensagem} className="p-4 bg-[#050505] border-t border-[#333] flex gap-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 bg-[#1a1a1a] text-white rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-[#FCEE0A] transition-all placeholder-gray-600"
+            placeholder={mode === 'bronze' ? "Digite o número..." : "Faça seu pedido..."}
+          />
+          <button 
+            type="submit" 
+            className={`w-12 h-12 rounded-full flex items-center justify-center transition-transform hover:scale-105 ${activeColor}`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+            </svg>
+          </button>
+        </form>
+
       </div>
 
-      <form onSubmit={enviarMensagem} className="p-4 bg-[#111] border-t-2 border-[#FCEE0A] flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 bg-black border border-[#333] text-[#FCEE0A] p-3 focus:outline-none focus:border-[#FCEE0A] focus:shadow-[0_0_15px_#FCEE0A44]"
-          placeholder="Digite sua mensagem..."
-        />
-        <button type="submit" className="bg-[#FCEE0A] text-black font-bold px-6 hover:bg-white transition-colors uppercase">
-          SEND
-        </button>
-      </form>
+      <div className="mt-6 text-gray-600 text-xs uppercase tracking-widest">
+        Powered by Zytech System
+      </div>
     </div>
   );
 }
